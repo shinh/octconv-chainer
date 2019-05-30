@@ -93,6 +93,7 @@ def main():
     parser.add_argument('--crop', choices=('center', '10'))
     parser.add_argument('--resnet-arch')
     parser.add_argument('--alpha',type=float, default=0)
+    parser.add_argument('--export', action='store_true')
     args = parser.parse_args()
 
     dataset, eval_, model, batchsize = setup(
@@ -102,6 +103,12 @@ def main():
     if args.gpu >= 0:
         chainer.cuda.get_device(args.gpu).use()
         model.to_gpu()
+
+    if args.export:
+        import onnx_chainer
+        x = model.xp.random.rand(1, 3, 224, 224)
+        onnx_chainer.export_testcase(model.extractor, [x], args.model)
+        return
 
     iterator = iterators.MultiprocessIterator(
         dataset, batchsize, repeat=False, shuffle=False,
