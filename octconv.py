@@ -73,7 +73,7 @@ class OctConv(chainer.Chain):
 
         h_in_channels, l_in_channels = get_num_channel(in_channels, alpha_in)
         self.h_out_channels, self.l_out_channels = get_num_channel(out_channels, alpha_out)
-	
+
         with self.init_scope():
             self.conv_l2l = None if l_in_channels == 0 or self.l_out_channels == 0 else \
                             L.Convolution2D(l_in_channels, self.l_out_channels,
@@ -107,9 +107,9 @@ class OctConv(chainer.Chain):
         if x_l is not None:
             x_l2h = self.conv_l2h(x_l)
             _, _, H, W = x_h2h.shape
-            x_l2h = F.unpooling_2d(x_l2h, 2, outsize=(H, W)) if self.stride == 1 else x_l2h
+            x_l2h = F.unpooling_2d(x_l2h, 2, outsize=(H, W), cover_all=False) if self.stride == 1 else x_l2h
             x_l2l = F.average_pooling_2d(x_l, 2) if self.stride == 2 else x_l
-            x_l2l = self.conv_l2l(x_l2l) if self.l_out_channels > 0 else None 
+            x_l2l = self.conv_l2l(x_l2l) if self.l_out_channels > 0 else None
             x_h = x_l2h + x_h2h
             x_l = x_h2l + x_l2l if self.l_out_channels > 0 else None
             h_out, l_out = x_h, x_l
@@ -118,7 +118,7 @@ class OctConv(chainer.Chain):
 
         return h_out if l_out is None else (h_out, l_out)
 
-        
+
 
 class Conv_BN(chainer.Chain):
     def __init__(self, in_channels, out_channels, ksize, stride=1, pad=0, dilate=1, groups=1,
@@ -192,4 +192,3 @@ if __name__ == "__main__":
     print(x)
     print(out)
     print(out.shape)
-
