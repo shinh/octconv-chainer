@@ -106,7 +106,7 @@ def main():
 
     if args.export:
         import onnx_chainer
-        x = model.xp.random.rand(1, 3, 224, 224)
+        x = model.xp.random.rand(1, 3, 224, 224).astype(np.float32)
         onnx_chainer.export_testcase(model.extractor, [x], args.model)
         return
 
