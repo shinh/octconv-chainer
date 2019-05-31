@@ -94,6 +94,7 @@ def main():
     parser.add_argument('--resnet-arch')
     parser.add_argument('--alpha',type=float, default=0)
     parser.add_argument('--export', action='store_true')
+    parser.add_argument('--export-size', type=int, default=224)
     args = parser.parse_args()
 
     dataset, eval_, model, batchsize = setup(
@@ -106,7 +107,8 @@ def main():
 
     if args.export:
         import onnx_chainer
-        x = model.xp.random.rand(1, 3, 224, 224).astype(np.float32)
+        sz = args.export_size
+        x = model.xp.random.rand(1, 3, sz, sz).astype(np.float32)
         onnx_chainer.export_testcase(model.extractor, [x], args.model)
         return
 
